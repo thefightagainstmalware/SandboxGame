@@ -1,0 +1,15 @@
+[Unit]
+Description=Minecraft Server
+After=network.target
+
+[Service]
+ExecStart=$shell_script_path
+ExecReload=$shell_script_path
+Type=notify
+Restart=always
+User=$user
+PrivateTmp=yes
+
+[Install]
+WantedBy=default.target
+RequiredBy=network.target

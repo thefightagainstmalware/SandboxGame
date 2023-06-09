@@ -1,0 +1,117 @@
+include <tunables/global>
+
+# vim:syntax=apparmor
+# AppArmor policy for Minecraft server
+# ###AUTHOR### The Fight Against Malware
+# ###COPYRIGHT### MIT License
+# ###COPYRIGHT### Copyright (c) 2023 thefightagainstmalware on github.com
+# ###COPYRIGHT### Permission is hereby granted, free of charge, to any person obtaining a copy
+# ###COPYRIGHT### of this software and associated documentation files (the "Software"), to deal
+# ###COPYRIGHT### in the Software without restriction, including without limitation the rights
+# ###COPYRIGHT### to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# ###COPYRIGHT### copies of the Software, and to permit persons to whom the Software is
+# ###COPYRIGHT### furnished to do so, subject to the following conditions:
+# ###COPYRIGHT### The above copyright notice and this permission notice shall be included in all
+# ###COPYRIGHT### copies or substantial portions of the Software.
+# ###COPYRIGHT### THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# ###COPYRIGHT### IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# ###COPYRIGHT### FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# ###COPYRIGHT### AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# ###COPYRIGHT### LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# ###COPYRIGHT### OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# ###COPYRIGHT### SOFTWARE.
+# ###COMMENT### Minecraft server AppArmor rules. Report bugs at https://github.com/thefightagainstmalware/SandboxGame
+
+@{SERVER_DIR} = $mc_server_dir
+@{HOME} = $user_homedir # @{HOME} from tunables/global is too broad, we can do better
+@{uid} = $uid # same reasoning as above
+
+$shell_script_path {
+  # TODO: do we really need all of these abstractions?
+  include <abstractions/base>
+  include <abstractions/nameservice>
+  include <abstractions/consoles>
+  include <abstractions/X>
+
+  # TODO: make the permissions for networking more granular
+  network tcp,
+  network udp,
+  network unix,
+  network inet,
+
+  /dev/ r,
+
+  /etc/fonts/** r,
+  /etc/host.conf r,
+  /etc/hosts r,
+  /etc/java-*/jvm-*.cfg r,
+  /etc/java-*/** r,
+  /etc/ld.so.cache r,
+  /etc/ld.so.preload r,
+  /etc/lsb-release r,
+  /etc/modprobe.d/ r,
+  /etc/modprobe.d/* r,
+  /etc/nsswitch.conf r,
+  /etc/passwd r,
+  /etc/timezone r,
+  owner @{HOME}/.cache/fontconfig/* rw,
+  owner @{HOME}/.cache/JNA/temp/* mrw,
+  owner @{HOME}/.cache/JNA/temp/ r,
+  owner @{SERVER_DIR} rwk,
+  owner @{SERVER_DIR}/** rwk,
+  owner /proc/@{pid}/cgroup r,
+  owner /proc/@{pid}/coredump_filter rw,
+  owner /proc/@{pid}/fd/ r,
+  owner /proc/@{pid}/mountinfo r,
+  /proc/cgroups r,
+  /proc/cmdline r,
+  /proc/devices r,
+  /proc/@{pid}/** r,
+  /proc/scsi/ r,
+  /proc/scsi/sg/ r,
+  /sys/bus/cpu/devices/ r,
+  /sys/bus/memory/devices/ r,
+  /sys/bus/pci/devices/ r,
+  /sys/bus/pci/slots/*/address r,
+  /sys/bus/pci/slots/ r,
+  /sys/bus/pnp/devices/ r,
+  /sys/bus/ r,
+  /sys/bus/virtio/devices/ r,
+  /sys/class/mmc_host/ r,
+  /sys/class/nvme/ r,
+  /sys/class/ r,
+  /sys/class/sound/ r,
+  /sys/devices/** r,
+  /sys/devices/system/cpu/** r,
+  owner /sys/fs/cgroup/user.slice/user-@{uid}.slice/user@@{uid}.service/app.slice/*/memory.max r,
+  /tmp/ r,
+  /tmp/*.so.lck rw,
+  /tmp/*.so mrw,
+  owner /tmp/hsperfdata_*/ rw,
+  owner /tmp/hsperfdata_*/** rw,
+  /usr/bin/bash ix,
+  /usr/bin/java ix,
+  /usr/bin/lshw ix,
+  /usr/bin/lspci ix,
+  /usr/bin/stty ix,
+  /usr/bin/sh ix,
+  /usr/bin/tty ix,
+  /usr/bin/uname ix,
+  /usr/bin/whoami ix,
+  /usr/lib64/ r,
+  /usr/lib/jvm/*/bin/java ix,
+  /usr/lib/jvm/*/lib/jspawnhelper ix,
+  /usr/lib/ r,
+  /usr/local/share/fonts/** r,
+  /usr/sbin/dmidecode ix,
+  /usr/sbin/ldconfig ixr,
+  /usr/sbin/ldconfig.real ix,
+  /usr/share/fontconfig/** r,
+  /usr/share/fonts/ r,
+  /usr/share/fonts/** r,
+  /usr/share/hwdata/pnp.ids r,
+  /usr/share/icons/** r,
+  /usr/share/java/* r,
+  /usr/share/misc/pci.ids r,
+  /var/cache/fontconfig/* r,
+}
