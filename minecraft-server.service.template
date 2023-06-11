@@ -8,7 +8,7 @@ ExecReload=$shell_script_path
 Type=notify
 Restart=always
 User=$user
-PrivateTmp=yes
+WorkingDirectory=$workdir
 
 [Install]
 WantedBy=default.target

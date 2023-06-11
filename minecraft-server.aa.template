@@ -23,8 +23,10 @@ include <tunables/global>
 # ###COMMENT### Minecraft server AppArmor rules. Report bugs at https://github.com/thefightagainstmalware/SandboxGame
 
 @{SERVER_DIR} = $mc_server_dir
-@{HOME} = $user_homedir # @{HOME} from tunables/global is too broad, we can do better
-@{uid} = $uid # same reasoning as above
+# @{HOME} from tunables/global is too broad, we can do better
+@{HOMEDIR} = $user_homedir
+# same reasoning as above
+@{REAL_UID} = $uid 
 
 $shell_script_path {
   # TODO: do we really need all of these abstractions?
@@ -54,9 +56,9 @@ $shell_script_path {
   /etc/nsswitch.conf r,
   /etc/passwd r,
   /etc/timezone r,
-  owner @{HOME}/.cache/fontconfig/* rw,
-  owner @{HOME}/.cache/JNA/temp/* mrw,
-  owner @{HOME}/.cache/JNA/temp/ r,
+  owner @{HOMEDIR}/.cache/fontconfig/* rw,
+  owner @{HOMEDIR}/.cache/JNA/temp/* mrw,
+  owner @{HOMEDIR}/.cache/JNA/temp/ r,
   owner @{SERVER_DIR} rwk,
   owner @{SERVER_DIR}/** rwk,
   owner /proc/@{pid}/cgroup r,
@@ -83,16 +85,19 @@ $shell_script_path {
   /sys/class/sound/ r,
   /sys/devices/** r,
   /sys/devices/system/cpu/** r,
-  owner /sys/fs/cgroup/user.slice/user-@{uid}.slice/user@@{uid}.service/app.slice/*/memory.max r,
+  /sys/fs/cgroup/user.slice/user-@{uid}.slice/user@@{uid}.service/app.slice/*/memory.max r,
+  /sys/fs/cgroup/system.slice/$our_service/memory.max r,
   /tmp/ r,
   /tmp/*.so.lck rw,
   /tmp/*.so mrw,
   owner /tmp/hsperfdata_*/ rw,
   owner /tmp/hsperfdata_*/** rw,
   /usr/bin/bash ix,
+  /usr/bin/clear ix,
   /usr/bin/java ix,
   /usr/bin/lshw ix,
   /usr/bin/lspci ix,
+  /usr/bin/pwd ix,
   /usr/bin/stty ix,
   /usr/bin/sh ix,
   /usr/bin/tty ix,
