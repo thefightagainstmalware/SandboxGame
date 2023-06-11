@@ -200,15 +200,5 @@ if [ -f /sys/module/apparmor/parameters/enabled ] && grep "Y" /sys/module/apparm
         done
     fi
 else
-    echo -e "AppArmor is required to run this script. SELinux is not supported yet If you have AppArmor support in your kernel, enable it with \nsudo systemctl enable apparmor --now"
+    echo -e "AppArmor is required to run this script. SELinux is not supported yet. If you have AppArmor support in your kernel, enable it with \nsudo systemctl enable apparmor --now"
 fi
-
-systemctl daemon-reload
-truncate --size 0 /var/log/kern.log
-sudo service apparmor reload
-
-# Profile: /home/sandbox_game_minecraft_server/sandbox_game_minecraft_server/main.sh
-# Operation: open
-# Name: /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-konsole-ee5e112a1c6744658ffa351a6ad8c1d5.scope/memory.max
-# Denied: r
-# Logfile: /var/log/kern.log 
